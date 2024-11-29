@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    shm_size: 256mb
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=real-time-notification-service
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=real-time-notification-service

@@ -1,0 +1,24 @@
+demo:
+  phoneNumber: +31644045161
+
+twilio:
+  accountSID:
+  authToken:
+  phoneNumber:
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/real-time-notification-service
+    username: postgres
+    password: real-time-notification-service
+    hikari:
+      maximum-pool-size: 1
+      pool-name: HikariPool
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: false
