@@ -1,5 +1,5 @@
 demo:
-  phoneNumber: +31644045161
+  phoneNumber:
 
 twilio:
   accountSID:
