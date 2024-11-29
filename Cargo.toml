@@ -1,0 +1,17 @@
+[package]
+name = "real-time-incident-notification-service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7.5" }
+tokio = { version = "1.41.0", features = ["full"] }
+tower-http = { version = "0.6.1", features = ["fs", "trace", "cors"] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter", "json"] }
+serde = { version = "1.0.214", features = ["derive"] }
+dotenvy = "0.15.7"
+reqwest = { version = "0.12.9", features = ["json"] }
+tokio-util = "0.7.12"
+chrono = "0.4.38"
+rand = "0.9.0-alpha.2"
