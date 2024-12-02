@@ -72,6 +72,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>io.pyroscope</groupId>
+			<artifactId>agent</artifactId>
+			<version>0.14.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -44,3 +44,10 @@ twilio:
 
 server:
   port: 8080
+
+pyroscope:
+  server:
+    address: ${PYROSCOPE_SERVER_ADDRESS:pyroscope:4040}
+  auth:
+    user: ${PYROSCOPE_AUTH_USER:9999999}
+    password: ${PYROSCOPE_AUTH_PASSWORD:glc_fff}

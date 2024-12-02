@@ -6,11 +6,10 @@ import nl.ase_wayfinding.real_time_incident_notification_service.responses.Incid
 import nl.ase_wayfinding.real_time_incident_notification_service.services.IncidentService;
 import nl.ase_wayfinding.real_time_incident_notification_service.services.SMSService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -34,5 +33,12 @@ public class IncidentDataController {
         String uri = "/v1/incidents/" + response.getId();
 
         return ResponseEntity.created(URI.create(uri)).body(response);
+    }
+
+    // Make a Get Incident endpoint that takes two dates as parameters and returns all incidents that occurred between those dates
+    @GetMapping("/v1/incidents")
+    public ResponseEntity<List<IncidentResponse>> getIncidents(@RequestParam String startDateTime, @RequestParam String endDateTime) {
+        List<IncidentResponse> response = incidentService.getIncidentsRange(startDateTime, endDateTime);
+        return ResponseEntity.ok().body(response);
     }
 }

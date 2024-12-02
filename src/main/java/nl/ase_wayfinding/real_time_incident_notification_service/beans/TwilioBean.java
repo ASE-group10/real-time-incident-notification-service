@@ -4,6 +4,7 @@ import com.twilio.Twilio;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import java.util.Objects;
 
 @Configuration
 public class TwilioBean {
@@ -20,7 +21,11 @@ public class TwilioBean {
 
     @PostConstruct
     public void init() {
-        System.out.println("TwilioBean init");
+        if (Objects.equals(accountSID, "") || Objects.equals(authToken, "")) {
+            System.out.println("TwilioBean: accountSID or authToken is null");
+            return;
+        }
+
         Twilio.init(accountSID, authToken);
     }
 }
