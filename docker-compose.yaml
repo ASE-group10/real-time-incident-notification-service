@@ -1,11 +1,42 @@
+version: '3.9'
+
 services:
-  postgres:
-    image: postgres:17-alpine
-    restart: unless-stopped
-    shm_size: 256mb
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: notification-service
+    ports:
+      - "8080:8080"
+    environment:
+      DEMO_PHONE_NUMBER: "+1234567890"
+      TWILIO_ACCOUNT_SID: "your_account_sid"
+      TWILIO_AUTH_TOKEN: "your_auth_token"
+      TWILIO_PHONE_NUMBER: "+19876543210"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://database:5432/real-time-notification-service"
+      SPRING_DATASOURCE_USERNAME: "postgres"
+      SPRING_DATASOURCE_PASSWORD: "real-time-notification-service"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+      SPRING_JPA_SHOW_SQL: "false"
+    depends_on:
+      - database
+
+  database:
+    image: postgres:15
+    container_name: notification-database
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=real-time-notification-service
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=real-time-notification-service
+      POSTGRES_DB: real-time-notification-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: real-time-notification-service
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d real-time-notification-service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

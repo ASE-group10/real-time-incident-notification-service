@@ -1,24 +1,24 @@
 demo:
-  phoneNumber:
+  phoneNumber: ${DEMO_PHONE_NUMBER:}
 
 twilio:
-  accountSID:
-  authToken:
-  phoneNumber:
+  accountSID: ${TWILIO_ACCOUNT_SID:}
+  authToken: ${TWILIO_AUTH_TOKEN:}
+  phoneNumber: ${TWILIO_PHONE_NUMBER:}
 
 spring:
   config:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/real-time-notification-service
-    username: postgres
-    password: real-time-notification-service
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/real-time-notification-service}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:real-time-notification-service}
     hikari:
-      maximum-pool-size: 1
-      pool-name: HikariPool
+      maximum-pool-size: ${SPRING_DATASOURCE_MAXIMUM_POOL_SIZE:1}
+      pool-name: ${SPRING_DATASOURCE_POOL_NAME:HikariPool}
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: update
-    show-sql: false
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
