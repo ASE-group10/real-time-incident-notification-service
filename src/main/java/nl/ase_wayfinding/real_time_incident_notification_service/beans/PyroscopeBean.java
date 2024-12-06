@@ -33,14 +33,14 @@ public class PyroscopeBean {
     @PostConstruct
     public void init() {
 
-        if (activeProfile.equals("local")) {
+        if (activeProfile.equals("local") || pyroscopeServerAuthUser.isEmpty() || pyroscopeServerAuthPassword.isEmpty()) {
             System.out.println("Pyroscope is disabled in local profile");
             return;
         }
 
         PyroscopeAgent.start(
                 new Config.Builder()
-                        .setApplicationName(applicationName)
+                        .setApplicationName(applicationName + "-" + activeProfile)
                         .setProfilingEvent(EventType.ITIMER)
                         .setProfilingEvent(EventType.CPU)
                         .setFormat(Format.JFR)

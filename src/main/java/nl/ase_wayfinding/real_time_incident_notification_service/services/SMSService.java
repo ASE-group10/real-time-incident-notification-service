@@ -5,6 +5,8 @@ import com.twilio.type.PhoneNumber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+
 @Service
 public class SMSService {
 
@@ -13,6 +15,10 @@ public class SMSService {
 
     @Value("${twilio.phoneNumber}")
     private String twilioPhoneNumber;
+
+    public void sendSMSAsync(String message) {
+        CompletableFuture.runAsync(() -> sendSMS(message));
+    }
 
 //    public void sendSMS(String phoneNumber, String message) {
     public void sendSMS(String message) {

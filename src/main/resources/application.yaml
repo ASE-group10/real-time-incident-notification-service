@@ -51,3 +51,7 @@ pyroscope:
   auth:
     user: ${PYROSCOPE_AUTH_USER:9999999}
     password: ${PYROSCOPE_AUTH_PASSWORD:glc_fff}
+
+services:
+  user-store:
+    url: ${USER_STORE_URL:http://localhost:8080}
