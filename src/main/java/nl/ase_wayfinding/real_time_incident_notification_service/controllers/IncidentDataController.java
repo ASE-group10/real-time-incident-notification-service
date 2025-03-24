@@ -39,7 +39,6 @@ public class IncidentDataController {
         return ResponseEntity.created(URI.create(uri)).body(response);
     }
 
-    // Make a Get Incident endpoint that takes two dates as parameters and returns all incidents that occurred between those dates
     @GetMapping("/v1/incidents")
     public ResponseEntity<List<IncidentResponse>> getIncidents(@RequestParam String startDateTime, @RequestParam String endDateTime) {
         List<IncidentResponse> response = incidentService.getIncidentsRange(startDateTime, endDateTime);
