@@ -44,6 +44,16 @@ twilio:
   authToken: ${TWILIO_AUTH_TOKEN}
   phoneNumber: ${TWILIO_PHONE_NUMBER}
 
+pyroscope:
+  server:
+    address: ${PYROSCOPE_SERVER_ADDRESS:http://pyroscope:4040}
+  auth:
+    user: ${PYROSCOPE_AUTH_USER:admin}
+    password: ${PYROSCOPE_AUTH_PASSWORD:admin123}
+
+demo:
+  phoneNumber: ${DEMO_PHONE_NUMBER}
+
 services:
   user-store:
     url: ${USER_STORE_URL:http://localhost:8080}

@@ -51,6 +51,9 @@ pyroscope:
     user: ${PYROSCOPE_AUTH_USER}
     password: ${PYROSCOPE_AUTH_PASSWORD}
 
+demo:
+  phoneNumber: ${DEMO_PHONE_NUMBER}
+
 services:
   user-store:
     url: ${USER_STORE_URL:http://localhost:8080}
