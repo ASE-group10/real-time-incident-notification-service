@@ -3,7 +3,7 @@ spring:
     name: real-time-incident-notification-service
   config:
     activate:
-      on-profile: local
+      on-profile: dev
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/real-time-notification-service}
@@ -46,10 +46,10 @@ twilio:
 
 pyroscope:
   server:
-    address: ${PYROSCOPE_SERVER_ADDRESS:http://pyroscope:4040}
+    address: ${PYROSCOPE_SERVER_ADDRESS}
   auth:
-    user: ${PYROSCOPE_AUTH_USER:admin}
-    password: ${PYROSCOPE_AUTH_PASSWORD:admin123}
+    user: ${PYROSCOPE_AUTH_USER}
+    password: ${PYROSCOPE_AUTH_PASSWORD}
 
 demo:
   phoneNumber: ${DEMO_PHONE_NUMBER}
