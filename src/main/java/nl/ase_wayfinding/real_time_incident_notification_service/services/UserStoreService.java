@@ -1,7 +1,7 @@
 package nl.ase_wayfinding.real_time_incident_notification_service.services;
 
-import nl.ase_wayfinding.real_time_incident_notification_service.requests.UserStoreRoutesRequest;
-import nl.ase_wayfinding.real_time_incident_notification_service.responses.UserStoreRoutesResponse;
+import nl.ase_wayfinding.real_time_incident_notification_service.requests.UserStoreNearUsersRequest;
+import nl.ase_wayfinding.real_time_incident_notification_service.responses.UserStoreNearUsersResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,16 +16,20 @@ public class UserStoreService {
     @Value("${services.user-store.url}")
     private String userStoreUrl;
 
-    public UserStoreRoutesResponse getRoutes(double latitude, double longitude, double radius) {
+    public UserStoreNearUsersResponse getPhoneNumbers(double latitude, double longitude, int radius) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<UserStoreRoutesRequest> body = new HttpEntity<>(new UserStoreRoutesRequest(latitude, longitude, radius), headers);
+        HttpEntity<UserStoreNearUsersRequest> body = new HttpEntity<>(new UserStoreNearUsersRequest(latitude, longitude, radius), headers);
 
-        ResponseEntity<UserStoreRoutesResponse> response = restTemplate.postForEntity(userStoreUrl + "/api/routes/near-incident", body, UserStoreRoutesResponse.class);
-
-        return response.getBody();
+        ResponseEntity<UserStoreNearUsersResponse> response = restTemplate.postForEntity(userStoreUrl + "/api/routes/nearby-users", body, UserStoreNearUsersResponse.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return response.getBody();
+        } else {
+            System.out.println("Error: " + response.getStatusCode());
+            return null;
+        }
     }
 }

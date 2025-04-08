@@ -1,11 +1,11 @@
 package nl.ase_wayfinding.real_time_incident_notification_service.requests;
 
-public class UserStoreRoutesRequest {
+public class UserStoreNearUsersRequest {
     private double latitude;
     private double longitude;
-    private double radius;
+    private int radius;
 
-    public UserStoreRoutesRequest(double latitude, double longitude, double radius) {
+    public UserStoreNearUsersRequest(double latitude, double longitude, int radius) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
@@ -27,11 +27,11 @@ public class UserStoreRoutesRequest {
         this.longitude = longitude;
     }
 
-    public double getRadius() {
+    public int getRadius() {
         return radius;
     }
 
-    public void setRadius(double radius) {
+    public void setRadius(int radius) {
         this.radius = radius;
     }
 }

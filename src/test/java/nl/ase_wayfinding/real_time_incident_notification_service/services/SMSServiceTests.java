@@ -52,7 +52,7 @@ public class SMSServiceTests {
             when(messageCreator.create()).thenReturn(mockedMessage);
             when(mockedMessage.getSid()).thenReturn("SM123456789");
 
-            assertDoesNotThrow(() -> smsService.sendSMS(testMessageText));
+            assertDoesNotThrow(() -> smsService.sendSMS(testMessageText, testRecipientPhoneNumber));
 
             mockedStaticMessage.verify(() -> Message.creator(
                     new PhoneNumber(testRecipientPhoneNumber),
@@ -68,11 +68,11 @@ public class SMSServiceTests {
     void testSendSMSAsync() throws InterruptedException {
         SMSService spyService = spy(smsService);
 
-        spyService.sendSMSAsync(testMessageText);
+        spyService.sendSMSAsync(testMessageText, testRecipientPhoneNumber);
 
         Thread.sleep(100);
 
-        verify(spyService).sendSMS(testMessageText);
+        verify(spyService).sendSMS(testMessageText, testRecipientPhoneNumber);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class SMSServiceTests {
             when(messageCreator.create()).thenReturn(mockedMessage);
             when(mockedMessage.getSid()).thenReturn("SM123456789");
 
-            assertDoesNotThrow(() -> smsService.sendSMS(""));
+            assertDoesNotThrow(() -> smsService.sendSMS("", testRecipientPhoneNumber));
         }
     }
 
@@ -106,7 +106,7 @@ public class SMSServiceTests {
             when(messageCreator.create()).thenReturn(mockedMessage);
             when(mockedMessage.getSid()).thenReturn("SM123456789");
 
-            assertDoesNotThrow(() -> smsService.sendSMS(longMessage));
+            assertDoesNotThrow(() -> smsService.sendSMS(longMessage, testRecipientPhoneNumber));
         }
     }
 
@@ -124,7 +124,7 @@ public class SMSServiceTests {
             when(messageCreator.create()).thenReturn(mockedMessage);
             when(mockedMessage.getSid()).thenReturn("SM123456789");
 
-            assertDoesNotThrow(() -> smsService.sendSMS(messageWithSpecialChars));
+            assertDoesNotThrow(() -> smsService.sendSMS(messageWithSpecialChars, testRecipientPhoneNumber));
         }
     }
 }

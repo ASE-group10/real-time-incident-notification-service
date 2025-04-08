@@ -16,12 +16,11 @@ public class SMSService {
     @Value("${twilio.phoneNumber}")
     private String twilioPhoneNumber;
 
-    public void sendSMSAsync(String message) {
-        CompletableFuture.runAsync(() -> sendSMS(message));
+    public void sendSMSAsync(String message, String phoneNumber) {
+        CompletableFuture.runAsync(() -> sendSMS(message, phoneNumber));
     }
 
-//    public void sendSMS(String phoneNumber, String message) {
-    public void sendSMS(String message) {
+    public void sendSMS(String message, String phoneNumber) {
         Message smsMessage = Message.creator(
                 new PhoneNumber(phoneNumber),
                 new PhoneNumber(twilioPhoneNumber),

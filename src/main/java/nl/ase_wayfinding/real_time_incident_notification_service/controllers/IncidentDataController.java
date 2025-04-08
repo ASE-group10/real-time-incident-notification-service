@@ -2,6 +2,7 @@ package nl.ase_wayfinding.real_time_incident_notification_service.controllers;
 
 import nl.ase_wayfinding.real_time_incident_notification_service.requests.IncidentRequest;
 import nl.ase_wayfinding.real_time_incident_notification_service.responses.IncidentResponse;
+import nl.ase_wayfinding.real_time_incident_notification_service.responses.UserStoreNearUsersResponse;
 import nl.ase_wayfinding.real_time_incident_notification_service.services.IncidentService;
 import nl.ase_wayfinding.real_time_incident_notification_service.services.SMSService;
 import nl.ase_wayfinding.real_time_incident_notification_service.services.UserStoreService;
@@ -26,15 +27,21 @@ public class IncidentDataController {
 
     @PostMapping("/v1/incidents")
     public ResponseEntity<IncidentResponse> createIncident(@RequestBody IncidentRequest incident) {
+        System.out.println("sike");
 
-        if (Objects.equals(incident.getIncidentType(), "SendSMS")) {
-            smsService.sendSMSAsync(incident.getDescription());
+        UserStoreNearUsersResponse phoneNumbers = userStoreService.getPhoneNumbers(incident.getLat(), incident.getLon(), 100);
+        if (phoneNumbers.getPhoneNumbers().isEmpty()) {
+            IncidentResponse response = incidentService.createIncident(incident);
+            String uri = "/v1/incidents/" + response.getId();
+            return ResponseEntity.created(URI.create(uri)).body(response);
         }
-
-        userStoreService.getRoutes(incident.getLat(), incident.getLon(), 0);
 
         IncidentResponse response = incidentService.createIncident(incident);
         String uri = "/v1/incidents/" + response.getId();
+
+        if (Objects.equals(incident.getIncidentType(), "SendSMS")) {
+            smsService.sendSMSAsync(incident.getDescription(), String.valueOf(phoneNumbers.getPhoneNumbers().get(0)));
+        }
 
         return ResponseEntity.created(URI.create(uri)).body(response);
     }
