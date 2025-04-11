@@ -46,8 +46,7 @@ public class SMSServiceTests {
             mockedStaticMessage.when(() -> Message.creator(
                     new PhoneNumber(testRecipientPhoneNumber),
                     new PhoneNumber(testTwilioPhoneNumber),
-                    testMessageText
-            )).thenReturn(messageCreator);
+                    testMessageText)).thenReturn(messageCreator);
 
             when(messageCreator.create()).thenReturn(mockedMessage);
             when(mockedMessage.getSid()).thenReturn("SM123456789");
@@ -57,8 +56,7 @@ public class SMSServiceTests {
             mockedStaticMessage.verify(() -> Message.creator(
                     new PhoneNumber(testRecipientPhoneNumber),
                     new PhoneNumber(testTwilioPhoneNumber),
-                    testMessageText
-            ));
+                    testMessageText));
             verify(messageCreator).create();
             verify(mockedMessage).getSid();
         }
@@ -81,8 +79,7 @@ public class SMSServiceTests {
             mockedStaticMessage.when(() -> Message.creator(
                     new PhoneNumber(testRecipientPhoneNumber),
                     new PhoneNumber(testTwilioPhoneNumber),
-                    ""
-            )).thenReturn(messageCreator);
+                    "")).thenReturn(messageCreator);
 
             when(messageCreator.create()).thenReturn(mockedMessage);
             when(mockedMessage.getSid()).thenReturn("SM123456789");
@@ -93,15 +90,15 @@ public class SMSServiceTests {
 
     @Test
     void testSendSMSWithLongMessage() {
-        String longMessage = "This is a very long message that should exceed the standard SMS length limit of 160 characters. " +
+        String longMessage = "This is a very long message that should exceed the standard SMS length limit of 160 characters. "
+                +
                 "Let's make sure our service can handle messages that might be split into multiple SMS segments by the Twilio API.";
 
         try (MockedStatic<Message> mockedStaticMessage = mockStatic(Message.class)) {
             mockedStaticMessage.when(() -> Message.creator(
                     new PhoneNumber(testRecipientPhoneNumber),
                     new PhoneNumber(testTwilioPhoneNumber),
-                    longMessage
-            )).thenReturn(messageCreator);
+                    longMessage)).thenReturn(messageCreator);
 
             when(messageCreator.create()).thenReturn(mockedMessage);
             when(mockedMessage.getSid()).thenReturn("SM123456789");
@@ -118,13 +115,45 @@ public class SMSServiceTests {
             mockedStaticMessage.when(() -> Message.creator(
                     new PhoneNumber(testRecipientPhoneNumber),
                     new PhoneNumber(testTwilioPhoneNumber),
-                    messageWithSpecialChars
-            )).thenReturn(messageCreator);
+                    messageWithSpecialChars)).thenReturn(messageCreator);
 
             when(messageCreator.create()).thenReturn(mockedMessage);
             when(mockedMessage.getSid()).thenReturn("SM123456789");
 
             assertDoesNotThrow(() -> smsService.sendSMS(messageWithSpecialChars, testRecipientPhoneNumber));
         }
+    }
+
+    @Test
+    void testSendSMSHandlesException() {
+        try (MockedStatic<Message> mockedStaticMessage = mockStatic(Message.class)) {
+            mockedStaticMessage.when(() -> Message.creator(
+                    new PhoneNumber(testRecipientPhoneNumber),
+                    new PhoneNumber(testTwilioPhoneNumber),
+                    testMessageText)).thenReturn(messageCreator);
+
+            when(messageCreator.create()).thenThrow(new RuntimeException("API Error"));
+
+            // Should not throw exception to the caller
+            assertDoesNotThrow(() -> smsService.sendSMS(testMessageText));
+
+            mockedStaticMessage.verify(() -> Message.creator(
+                    new PhoneNumber(testRecipientPhoneNumber),
+                    new PhoneNumber(testTwilioPhoneNumber),
+                    testMessageText));
+            verify(messageCreator).create();
+        }
+    }
+
+    @Test
+    void testSendSMSAsyncHandlesException() throws InterruptedException {
+        SMSService spyService = spy(smsService);
+        doThrow(new RuntimeException("SMS sending failed")).when(spyService).sendSMS(testMessageText);
+
+        // Should not throw exception even if the underlying sendSMS fails
+        assertDoesNotThrow(() -> spyService.sendSMSAsync(testMessageText));
+
+        Thread.sleep(100); // Wait for async operation
+        verify(spyService).sendSMS(testMessageText);
     }
 }
