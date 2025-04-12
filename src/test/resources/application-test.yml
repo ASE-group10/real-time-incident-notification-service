@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: test
   application:
     name: real-time-incident-notification-service-test
 
