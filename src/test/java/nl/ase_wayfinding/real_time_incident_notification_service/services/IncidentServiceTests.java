@@ -6,10 +6,10 @@ import nl.ase_wayfinding.real_time_incident_notification_service.requests.Incide
 import nl.ase_wayfinding.real_time_incident_notification_service.responses.IncidentResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -19,58 +19,89 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-public class IncidentServiceTests {
+class IncidentServiceTests {
+
     @Mock
     private IncidentRepository incidentRepository;
 
     @InjectMocks
     private IncidentService incidentService;
 
-    private IncidentModel mockIncidentModel;
-    private IncidentRequest mockIncidentRequest;
-
     @BeforeEach
     void setUp() {
-        mockIncidentModel = new IncidentModel();
-        UUID uuid = UUID.randomUUID();
-        mockIncidentModel.setId(uuid);
-        mockIncidentModel.setCreatedAt(Timestamp.valueOf("2024-03-13 10:00:00"));
-
-        mockIncidentRequest = mock(IncidentRequest.class);
-        lenient().when(mockIncidentRequest.toIncidentModel()).thenReturn(mockIncidentModel);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void testCreateIncident() {
-        UUID uuid = UUID.randomUUID();
-        mockIncidentModel.setId(uuid);
-        when(incidentRepository.save(any(IncidentModel.class))).thenReturn(mockIncidentModel);
+        IncidentRequest request = new IncidentRequest();
+        // Using reflection to set private fields on the request
+        setField(request, "incidentType", "TestType");
+        setField(request, "location", "TestLocation");
+        setField(request, "lat", 10.0);
+        setField(request, "lon", 20.0);
+        setField(request, "description", "Test Description");
+        // The createdAt string will be manipulated by toIncidentModel() – note the expected format.
+        String createdAtStr = "2025-04-12 10:10:10.0000";
+        setField(request, "createdAt", createdAtStr);
 
-        IncidentResponse response = incidentService.createIncident(mockIncidentRequest);
+        // Create a dummy IncidentModel that would be returned by repository.save(...)
+        IncidentModel incidentModel = request.toIncidentModel();
+        UUID dummyId = UUID.randomUUID();
+        incidentModel.setId(dummyId);
 
-        assertNotNull(response);
-        assertEquals(uuid, response.getId());
-        verify(incidentRepository, times(1)).save(mockIncidentModel);
+        when(incidentRepository.save(any(IncidentModel.class))).thenReturn(incidentModel);
+
+        IncidentResponse response = incidentService.createIncident(request);
+
+        // Verify that repository.save was called and the IncidentResponse contains the right data.
+        ArgumentCaptor<IncidentModel> captor = ArgumentCaptor.forClass(IncidentModel.class);
+        verify(incidentRepository, times(1)).save(captor.capture());
+        IncidentModel captured = captor.getValue();
+
+        assertEquals("TestType", captured.getIncidentType());
+        assertEquals("TestLocation", captured.getLocation());
+        assertEquals(10.0, captured.getLat());
+        assertEquals(20.0, captured.getLon());
+        assertEquals("Test Description", captured.getDescription());
+        assertEquals(dummyId, response.getId());
     }
 
     @Test
     void testGetIncidentsRange() {
-        Timestamp start = Timestamp.valueOf("2024-03-13 09:00:00");
-        Timestamp end = Timestamp.valueOf("2024-03-13 11:00:00");
+        String start = "2025-04-12 00:00:00.000";
+        String end = "2025-04-12 23:59:59.000";
+        Timestamp startTimestamp = Timestamp.valueOf(start);
+        Timestamp endTimestamp = Timestamp.valueOf(end);
 
-        UUID uuid = UUID.randomUUID();
-        mockIncidentModel.setId(uuid);
+        IncidentModel model = new IncidentModel();
+        model.setId(UUID.randomUUID());
+        model.setIncidentType("TestType");
+        model.setLocation("TestLocation");
+        model.setLat(10.0);
+        model.setLon(20.0);
+        model.setDescription("Test Description");
+        model.setCreatedAt(startTimestamp);
 
-        List<IncidentModel> mockIncidentList = Collections.singletonList(mockIncidentModel);
-        when(incidentRepository.findAllByCreatedAtBetween(start, end)).thenReturn(mockIncidentList);
+        when(incidentRepository.findAllByCreatedAtBetween(startTimestamp, endTimestamp))
+                .thenReturn(Collections.singletonList(model));
 
-        List<IncidentResponse> responses = incidentService.getIncidentsRange("2024-03-13 09:00:00", "2024-03-13 11:00:00");
+        List<IncidentResponse> responses = incidentService.getIncidentsRange(start, end);
 
-        assertNotNull(responses);
         assertEquals(1, responses.size());
-        assertEquals(uuid, responses.get(0).getId());
+        IncidentResponse res = responses.get(0);
+        assertEquals(model.getId(), res.getId());
+        assertEquals("TestType", res.getIncidentType());
+    }
 
-        verify(incidentRepository, times(1)).findAllByCreatedAtBetween(start, end);
+    // Utility method to set private fields via reflection.
+    private void setField(Object target, String fieldName, Object value) {
+        try {
+            java.lang.reflect.Field field = target.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(target, value);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
