@@ -32,23 +32,34 @@ public class PyroscopeBean {
 
     @PostConstruct
     public void init() {
+        // Skip initialization on Windows or in test environment
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("win") || "test".equals(activeProfile)) {
+            System.out.println("Pyroscope is disabled on Windows or in test environment");
+            return;
+        }
 
-//        if (activeProfile.equals("local") || pyroscopeServerAuthUser.isEmpty() || pyroscopeServerAuthPassword.isEmpty()) {
-//            System.out.println("Pyroscope is disabled in local profile");
-//            return;
-//        }
+        // Skip if auth credentials are empty
+        if (pyroscopeServerAuthUser == null || pyroscopeServerAuthUser.isEmpty() ||
+                pyroscopeServerAuthPassword == null || pyroscopeServerAuthPassword.isEmpty()) {
+            System.out.println("Pyroscope is disabled due to missing credentials");
+            return;
+        }
 
-        PyroscopeAgent.start(
-                new Config.Builder()
-                        .setApplicationName(applicationName + "-" + activeProfile)
-                        .setProfilingEvent(EventType.ITIMER)
-                        .setProfilingEvent(EventType.CPU)
-                        .setFormat(Format.JFR)
-                        .setServerAddress(pyroscopeServerAddress)
-                        .setBasicAuthUser(pyroscopeServerAuthUser)
-                        .setBasicAuthPassword(pyroscopeServerAuthPassword)
-                        .setProfilingAlloc("512k")
-                        .build()
-        );
+        try {
+            PyroscopeAgent.start(
+                    new Config.Builder()
+                            .setApplicationName(applicationName + "-" + activeProfile)
+                            .setProfilingEvent(EventType.ITIMER)
+                            .setProfilingEvent(EventType.CPU)
+                            .setFormat(Format.JFR)
+                            .setServerAddress(pyroscopeServerAddress)
+                            .setBasicAuthUser(pyroscopeServerAuthUser)
+                            .setBasicAuthPassword(pyroscopeServerAuthPassword)
+                            .setProfilingAlloc("512k")
+                            .build());
+        } catch (Exception e) {
+            System.out.println("Failed to initialize Pyroscope agent: " + e.getMessage());
+        }
     }
 }
