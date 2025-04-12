@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: test
+  application:
+    name: real-time-incident-notification-service-test
+
+pyroscope:
+  server:
+    address: http://test-pyroscope-server
+  auth:
+    user: test-user
+    password: test-password

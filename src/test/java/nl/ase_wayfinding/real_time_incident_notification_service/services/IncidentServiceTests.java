@@ -41,8 +41,8 @@ class IncidentServiceTests {
         setField(request, "lat", 10.0);
         setField(request, "lon", 20.0);
         setField(request, "description", "Test Description");
-        // The createdAt string will be manipulated by toIncidentModel() – note the expected format.
-        String createdAtStr = "2025-04-12 10:10:10.0000";
+        // Corrected timestamp format
+        String createdAtStr = "2025-04-12 10:10:10.000";
         setField(request, "createdAt", createdAtStr);
 
         // Create a dummy IncidentModel that would be returned by repository.save(...)
