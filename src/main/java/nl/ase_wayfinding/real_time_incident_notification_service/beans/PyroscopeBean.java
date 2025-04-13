@@ -11,22 +11,24 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PyroscopeBean {
 
-    @Value("${spring.profiles.active}")
     private String activeProfile;
-
-    @Value("${spring.application.name}")
     private String applicationName;
-
-    @Value("${pyroscope.server.address}")
     private String pyroscopeServerAddress;
-
-    @Value("${pyroscope.auth.user}")
     private String pyroscopeServerAuthUser;
-
-    @Value("${pyroscope.auth.password}")
     private String pyroscopeServerAuthPassword;
 
-    public PyroscopeBean() {
+    // Default constructor for Spring to use with @Value
+    public PyroscopeBean(
+            @Value("${spring.profiles.active:default}") String activeProfile,
+            @Value("${spring.application.name:app}") String applicationName,
+            @Value("${pyroscope.server.address:}") String pyroscopeServerAddress,
+            @Value("${pyroscope.auth.user:}") String pyroscopeServerAuthUser,
+            @Value("${pyroscope.auth.password:}") String pyroscopeServerAuthPassword) {
+        this.activeProfile = activeProfile;
+        this.applicationName = applicationName;
+        this.pyroscopeServerAddress = pyroscopeServerAddress;
+        this.pyroscopeServerAuthUser = pyroscopeServerAuthUser;
+        this.pyroscopeServerAuthPassword = pyroscopeServerAuthPassword;
         System.out.println("PyroscopeBean created");
     }
 
@@ -40,8 +42,7 @@ public class PyroscopeBean {
         }
 
         // Skip if auth credentials are empty
-        if (pyroscopeServerAuthUser == null || pyroscopeServerAuthUser.isEmpty() ||
-                pyroscopeServerAuthPassword == null || pyroscopeServerAuthPassword.isEmpty()) {
+        if (pyroscopeServerAuthUser.isEmpty() || pyroscopeServerAuthPassword.isEmpty()) {
             System.out.println("Pyroscope is disabled due to missing credentials");
             return;
         }

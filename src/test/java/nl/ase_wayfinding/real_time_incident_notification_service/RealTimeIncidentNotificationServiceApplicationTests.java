@@ -1,15 +1,15 @@
 package nl.ase_wayfinding.real_time_incident_notification_service;
 
+import nl.ase_wayfinding.real_time_incident_notification_service.config.TestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 
-import nl.ase_wayfinding.real_time_incident_notification_service.config.PyroscopeTestConfig;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@ContextConfiguration(classes = PyroscopeTestConfig.class)
+@Import(TestConfig.class)
 class RealTimeIncidentNotificationServiceApplicationTests {
 
 	@Test

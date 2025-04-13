@@ -8,3 +8,16 @@ pyroscope:
   auth:
     user: test-user
     password: test-password
+
+twilio:
+  accountSID: abc123
+  authToken: xyz987
+  phoneNumber:
+
+demo:
+  phoneNumber: "+15555551212"
+
+services:
+  user-store:
+    url: "http://localhost:8083"
+
